@@ -28,7 +28,24 @@ cat << EOF >> ~/.bashrc
 alias ls='ls -FG'
 alias ll='ls -alFG --color=auto'
 
+alias jcapp='sudo jounalctl -u ${APP_SERVICE_NAME}'
+alias sc='sudo systemctl'
+alias scl='sudo systemctl list-unit-files --type=service'
+alias scla='sudo systemctl list-units --type=service --state=running'
+alias scs='sudo systemctl status'
+alias scr='sudo systemctl restart'
+alias scsn='sudo systemctl status nginx'
+alias scrn='sudo systemctl restart nginx'
+alias scsm='sudo systemctl status mysql'
+alias scrm='sudo systemctl restart mysql'
+alias scss='sudo systemctl status ${APP_SERVICE_NAME}'
+alias scrs='sudo systemctl restart ${APP_SERVICE_NAME}'
+
+alias cdapp='cd ${APP_DIR}'
+
 export PATH=$PATH:$(go env GOPATH)/bin
+
+HISTSIZE=10000
 EOF
 
 cat << EOF >> ~/.bash_profile
@@ -39,19 +56,45 @@ EOF
 
 ```
 
+```shell
+echo 'export APP_SERVICE_NAME='<Goのサービス名>' >> ~/.bash_profile
+echo 'export APP_DIR=/home/isucon/webapp/go' >> ~/.bash_profile
+```
 
 ## 各種インストール
-```shell
-# pt-query-digest, htop
-sudo apt install -y --fix-missing htop percona-toolkit dstat
 
-# alp
-curl -LO https://github.com/tkuchiki/alp/releases/download/v1.0.21/alp_linux_amd64.tar.gz
-tar zxvf alp_linux_amd64.tar.gz
-sudo install ./alp /usr/local/bin
-rm alp_linux_amd64.tar.gz alp
+[./pprotein](./pprotein.md)
+
+## etcをホームにコピーする
+
+```
+# nginx
+mkdir -p ~/etc/nginx
+sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.org
+sudo cp /etc/nginx/nginx.conf ~/etc/nginx/nginx.conf
+sudo chmod a+w ~/etc/nginx/nginx.conf
+# sudo ln -s ~/etc/nginx/nginx.conf /etc/nginx/nginx.conf
+
+mkdir -p ~/etc/nginx/sites-enabled
+sudo cp -r /etc/nginx/sites-enabled /etc/nginx/sites-enabled.org
+sudo cp -r /etc/nginx/sites-enabled/* ~/etc/nginx/sites-enabled/
+sudo chmod a+w ~/etc/nginx/sites-enabled/*
+
+mkdir -p ~/etc/nginx/sites-available
+sudo cp -r /etc/nginx/sites-available /etc/nginx/sites-available.org
+sudo cp -r /etc/nginx/sites-available/* ~/etc/nginx/sites-available/
+sudo chmod a+w ~/etc/nginx/sites-available/*
 
 
-# go install
-go install golang.org/x/tools/cmd/goimports@latest
+# mysql
+mkdir -p ~/etc/mysql
+sudo cp /etc/mysql/mysql.conf.d/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf.org
+sudo cp /etc/mysql/mysql.conf.d/mysqld.cnf ~/etc/mysql/
+sudo chmod a+w ~/etc/mysql/mysqld.cnf
+
+## ulimit
+mkdir -p ~/etc/security
+sudo cp /etc/security/limits.conf /etc/security/limits.conf.org
+sudo cp /etc/security/limits.conf ~/etc/security/limits.conf
+sudo chmod a+w ~/etc/security/limits.conf
 ```

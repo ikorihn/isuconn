@@ -6,7 +6,8 @@
 webサーバーにて
 
 ```shell
-go get github.com/kaz/pprotein
+cd $APP_DIR
+go get -u github.com/kaz/pprotein
 ```
 
 echoの場合
@@ -62,6 +63,21 @@ func main() {
     }()
 
     // ....
+}
+```
+
+### initializeHandlerに仕込む
+
+benchが最初に初期データの投入などで実行するinitialize処理にpproteinのcollectをフックする
+```go
+func initializXXX() {
+
+    // ....
+	go func() {
+		if _, err := http.Get("http://54.250.166.195:9000/api/group/collect"); err != nil {
+			log.Printf("failed to communicate with pprotein: %v", err)
+		}
+	}()
 }
 ```
 
